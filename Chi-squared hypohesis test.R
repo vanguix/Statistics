@@ -5,7 +5,7 @@ attach(x)
 names(x)
 
 
-# Test the dependence between the branch of studies and sex
+# Test the dependence between doing sports or not and sex
 chisq.test(SPORT_B,SEX)
 chisq.test(SPORT_B,SEX)$observed
 chisq.test(SPORT_B,SEX)$expected
