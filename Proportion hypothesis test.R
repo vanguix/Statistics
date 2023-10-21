@@ -5,6 +5,8 @@ names(x)
 
 
 n=172 #total of people in the sample
-x=20# persons who do exercise
+e= sum(SPORT_B == 'Si')  # persons who do exercise
 p=0.60 #proportion of people that exercise
-binom.test(x, n, p, alternative="g")
+binom.test(e, n, p, alternative="g")
+
+#pvalue= 2.2e-16
