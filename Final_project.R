@@ -39,6 +39,19 @@ dev.new()
 hist(MINUTES, freq = F, col= "deepskyblue3")
 
 
+#Q7. Which days of the week did you practice these sports last week?
+
+dev.new()
+barplot(table(WEEK_BLOCK),main = "Moment of the week",
+        ylab = "Frequency", col=brewer.pal(n = 4, name = "Paired") )
+
+
+#Q8. At what time of the day do you usually exercise?
+
+dev.new()  
+barplot(table(DAY_M),main = "Moment of the day",
+        ylab = "Frequency", col=brewer.pal(n = 4, name = "Paired") )
+
 
 ##MODEL FITTING
 
@@ -101,7 +114,7 @@ lines(grid, plnorm(grid, fit_MLE_lnorm$estimate[1], fit_MLE_lnorm$estimate[2]), 
 lines(grid, pgamma(grid, fit_MM_gamma$estimate[1], fit_MM_gamma$estimate[2]), col = "deeppink", lwd = 2)  
 lines(grid, pgamma(grid, fit_MLE_gamma$estimate[1], fit_MLE_gamma$estimate[2]), col = "chartreuse3", lty = 2, lwd = 2)  
 
-legend("topleft", c("MM exp", "MLE exp", "MM lnorm", "MLE lnorm", "MM gamma", "MLE gamma"), col = c("red", "blue", 'blueviolet', 'cyan4', 'deeppink', 'chartreuse3'), lty = c(1, 2, 1, 1, 1, 2), lwd = 2)  # Ajusta el grosor a 2
+legend("topleft", c("MM exp", "MLE exp", "MM lnorm", "MLE lnorm", "MM gamma", "MLE gamma"), col = c("red", "blue", 'blueviolet', 'cyan4', 'deeppink', 'chartreuse3'), lty = c(1, 2, 1, 1, 1, 2), lwd = 2) 
 
 
 # Model comparison using AIC
@@ -132,9 +145,14 @@ binom.test(e, n, p, alternative="g")
 
 
 #Second hypothesis: Spanish who have practiced sport during 2023 spent 
-#more than 326 minutes per week
+#less than 326 minutes per week
 
-t.test(MINUTES, mu = 326, alternative="g")
+#First, to get a bilateral confidence interval:
+t.test(MINUTES_NZ, mu = 326)
+
+#Now we test the hypothesis: 
+
+t.test(MINUTES_NZ, mu = 326, alternative="l")
 
 #pvalue= 0.9995, there is not enough evidence to accept the hypothesis 
 
@@ -157,6 +175,20 @@ V
 #p-value = 0.466
 #there is not sufficient evidence to say they are dependent
 #Cramers' V coefficient=0.05559055, as closer to 0, more independency.
+
+
+
+  #Test dependance between time of the day and day of the week
+chisq.test(WEEK_BLOCK,DAY_M)
+chisq.test(WEEK_BLOCK,DAY_M)$observed
+chisq.test(WEEK_BLOCK,DAY_M)$expected
+
+# Cramers' V coefficient
+Chi2 = chisq.test(WEEK_BLOCK,DAY_M)$statistic
+N2 = length(WEEK_BLOCK)
+V2 = sqrt(Chi2/N2)
+V2
+
 
         ##Multiple sample hypothesis test (ANOVA)
       #Test for differences in the mean minutes of sport per week
