@@ -179,15 +179,28 @@ V
 
 
   #Test dependance between time of the day and day of the week
+  #First approach: with none values and weekend
 chisq.test(WEEK_BLOCK,DAY_M)
 chisq.test(WEEK_BLOCK,DAY_M)$observed
 chisq.test(WEEK_BLOCK,DAY_M)$expected
 
+
+  #Expected frequencies so small, we modify the data
+
+WEEK_BLOCK_M = ifelse(df_nonzero[,"WEEK_BLOCK"] == 'Weekend', 'Week',df_nonzero[,"WEEK_BLOCK"])
+
+ #Repeat test
+chisq.test(WEEK_BLOCK_M,df_nonzero[,"DAY_M"])
+chisq.test(WEEK_BLOCK_M,df_nonzero[,"DAY_M"])$observed
+chisq.test(WEEK_BLOCK_M,df_nonzero[,"DAY_M"])$expected
+
 # Cramers' V coefficient
-Chi2 = chisq.test(WEEK_BLOCK,DAY_M)$statistic
-N2 = length(WEEK_BLOCK)
+Chi2 = chisq.test(WEEK_BLOCK_M,df_nonzero[,"DAY_M"])$statistic
+N2 = length(WEEK_BLOCK_M)
 V2 = sqrt(Chi2/N2)
 V2
+
+
 
 
         ##Multiple sample hypothesis test (ANOVA)
@@ -203,5 +216,48 @@ summary(aov(MINUTES~N_SPORTS))
 # the factor is statistically significant , so there is enough evidence to affirm 
 # that THERE IS AT LEAST A PAIR OF GROUPS WITH DIFFERENT MEANS.
 
+## Correlation hypothesis test
+#First, we observe how our data looks, trying several transformations
+AGE_NZ= df_nonzero[,"AGE"]
+dev.new()
+plot(MINUTES_NZ, AGE_NZ, main= 'Original values')
+dev.new()
+plot(MINUTES_NZ, log(AGE_NZ), main = 'Age log transformed')
+dev.new()
+plot(log(MINUTES_NZ), AGE_NZ, main = 'Minutes log transformed')
+dev.new()
+plot(log(MINUTES_NZ), log(AGE_NZ), main = 'Both log transformed')
+
+transformed_data = qlnorm(ppoints(MINUTES_NZ), meanlog = mean(log(MINUTES_NZ)), sdlog = sd(log(MINUTES_NZ)))
+dev.new()
+plot(transformed_data, AGE_NZ, main= 'Minutes logn transformed')
+dev.new()
+plot(transformed_data, log(AGE_NZ), main= 'Minutes logn and age log')
+dev.new()
+plot(transformed_data, sqrt(AGE_NZ), main= 'Minutes logn and age sqrt')
 
 
+transformed_data_gamma <- qgamma(ppoints(MINUTES_NZ), fit_MLE_gamma$estimate[1], fit_MLE_gamma$estimate[2])
+dev.new()
+plot(transformed_data_gamma, AGE_NZ, main= 'Minutes gamma transformed')
+dev.new()
+plot(transformed_data_gamma, sqrt(AGE_NZ), main= 'Minutes gamma and age sqrt')
+dev.new()
+plot(transformed_data_gamma, log(AGE_NZ), main= 'Minutes gamma and age log')
+
+#Finally, we perform the test on no transformed and yes to compare
+#We can apply this test as n is large
+length(MINUTES_NZ)
+cor.test(MINUTES_NZ, AGE_NZ)
+cor.test(transformed_data_gamma, AGE_NZ)
+
+# In order to visualize the correlation line, we need to rescale
+dev.new()
+scaled_minutes <- MINUTES_NZ / max(MINUTES_NZ)
+plot(AGE_NZ, scaled_minutes, main = 'Correlation test age vs minutes')
+abline(lm(scaled_minutes ~ AGE_NZ))
+
+dev.new()
+scaled_transformed_data_gamma <- transformed_data_gamma / max(transformed_data_gamma)
+plot(AGE_NZ, scaled_transformed_data_gamma, main = 'Correlation test age vs gamma(minutes)', ylab = 'Scaled transformed_data_gamma', xlab = 'AGE_NZ')
+abline(lm(scaled_transformed_data_gamma ~ AGE_NZ))
