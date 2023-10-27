@@ -6,6 +6,7 @@
 #Using statistical methods and clear visual representations, the aim is to present 
 #a comprehensive view of sports engagement and to confirm or dismiss the previous 
 #hypotheses with the information from the survey. 
+install.packages("RColorBrewer") 
 library("RColorBrewer")
 library(fitdistrplus)
 
@@ -142,6 +143,7 @@ p=0.60 #proportion of people that exercise
 
 #First we calculate the bilateral confidence interval
 binom.test(e, n, p)
+
 #Then we perform the test
 binom.test(e, n, p, alternative="g")
 
