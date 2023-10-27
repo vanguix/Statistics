@@ -139,6 +139,10 @@ fit_MLE_gamma$aic
 n=172 #total of people in the sample
 e= sum(SPORT_B == 'Si')  # persons who do exercise
 p=0.60 #proportion of people that exercise
+
+#First we calculate the bilateral confidence interval
+binom.test(e, n, p)
+#Then we perform the test
 binom.test(e, n, p, alternative="g")
 
 #pvalue= 2.2e-16--> we can confirm the hypothesis
